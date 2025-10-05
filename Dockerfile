@@ -3,8 +3,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy solution and project files
-COPY prasadbooks.sln ./
-COPY prasadbooks/ ./prasadbooks/
+COPY "prasadbooks (2).sln" ./
+COPY "prasadbooks (2)" ./prasadbooks/
 
 # Restore dependencies
 WORKDIR /src/prasadbooks
