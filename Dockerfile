@@ -1,34 +1,30 @@
 ﻿# ===== Build Stage =====
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /src
 
 # Copy solution and project files
 COPY prasadbooks.sln ./
-COPY prasadbooks/*.csproj ./prasadbooks/
+COPY prasadbooks/ ./prasadbooks/
 
 # Restore dependencies
+WORKDIR /src/prasadbooks
 RUN dotnet restore
 
-# Copy the rest of the project
-COPY prasadbooks/. ./prasadbooks/
-
 # Publish the project
-WORKDIR /app/prasadbooks
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -c Release -o /app/out
 
 # ===== Runtime Stage =====
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
 # Copy the published app from build stage
-COPY --from=build /app/prasadbooks/out .
+COPY --from=build /app/out .
 
-# Expose the port Render uses
-EXPOSE 10000
-
-# Set environment variables
-ENV ASPNETCORE_URLS=http://+:10000
+# Expose Render port dynamically
+ARG PORT
+ENV ASPNETCORE_URLS=http://*:${PORT:-10000}
 ENV DOTNET_RUNNING_IN_CONTAINER=true
+EXPOSE ${PORT:-10000}
 
 # Start the API
 ENTRYPOINT ["dotnet", "prasadbooks.dll"]
