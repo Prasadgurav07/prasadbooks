@@ -1,26 +1,32 @@
-﻿# Use the official .NET SDK image to build the app
+﻿# ===== Build Stage =====
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copy csproj and restore dependencies
-COPY *.csproj .
+# Copy solution and project files
+COPY prasadbooks.sln ./
+COPY prasadbooks/*.csproj ./prasadbooks/
+
+# Restore dependencies
 RUN dotnet restore
 
-# Copy the rest of the source code
-COPY . .
+# Copy the rest of the project
+COPY prasadbooks/. ./prasadbooks/
 
-# Publish the app
+# Publish the project
+WORKDIR /app/prasadbooks
 RUN dotnet publish -c Release -o out
 
-# Use the official ASP.NET Core runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# ===== Runtime Stage =====
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
+
+# Copy the published app from build stage
 COPY --from=build /app/prasadbooks/out .
 
-# Expose the port (Render will use this port)
+# Expose the port Render uses
 EXPOSE 10000
 
-# Set the environment variable for ASP.NET Core
+# Set environment variables
 ENV ASPNETCORE_URLS=http://+:10000
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 
