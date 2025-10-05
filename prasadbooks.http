@@ -1,0 +1,6 @@
+# @prasadbooks_HostAddress = http://localhost:5023
+
+# POST {{prasadbooks_HostAddress}}/book/
+# Accept: application/json
+
+#  ##
